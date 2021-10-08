@@ -5,7 +5,7 @@ import HomePage from './page/homepage/homepage'
 import ShopPage from "./page/Shop page/shop.compnent";
 import Header from "./component/header-component/header.component";
 import SignInAndSignUpPage from "./page/sign-in and sign-up-page/sign-in-and-sign-up-page";
-import { auth } from './firebase/firebase.utils'
+import {auth, createUserProfileDocument} from './firebase/firebase.utils'
 
 const HatsPage = () => (
     <div>
@@ -24,8 +24,20 @@ class App extends React.Component {
 // Application listening to authentication state changes from the firebase backend
     unsubscribeFromAuth = null;
     componentDidMount(){    // this connection is always open as long as the component is mounted because it is an open subscription
-        this.unsubscribeFromAuth = auth.onAuthStateChanged( user => {
-            this.setState({ currentUser: user})
+        this.unsubscribeFromAuth = auth.onAuthStateChanged( async userAuth => {
+            if (userAuth){
+                const userRef = await createUserProfileDocument(userAuth);
+
+                userRef.onSnapshot( snapshot => {
+                    this.setState({
+                        currentUser : {
+                            id : snapshot.id,
+                            ...snapshot.data()
+                        }
+                    })
+                })
+            }
+            this.setState({ currentUser: userAuth})
         })
 
     }
