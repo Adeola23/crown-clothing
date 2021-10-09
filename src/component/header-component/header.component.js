@@ -1,5 +1,6 @@
 import React from "react";
 import {Link} from "react-router-dom";
+import {connect} from "react-redux";
 import { ReactComponent as Logo} from '../../Assets/crown.svg';
 import {auth} from '../../firebase/firebase.utils';
 
@@ -28,5 +29,11 @@ const Header = ({currentUser}) => (
 
     </div>
 )
-
-export default Header
+//We know with our root reducer it is an object with a property of user that points to userReducer which right now is just this initial state
+//because we have not triggered actions that updates the value of root reducer
+// state passed is the root reducer
+//currentUser: state.user.currentUser- means we want the rootReducer  then the user value and the we want the currentUser value
+const  mapStateToProps = state =>({
+    currentUser: state.user.currentUser
+})
+export default connect(mapStateToProps)(Header)
